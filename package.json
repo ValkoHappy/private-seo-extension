@@ -1,0 +1,19 @@
+{
+  "name": "privateseo-extension",
+  "version": "1.0.5",
+  "private": true,
+  "type": "module",
+  "description": "Build scripts for the PrivateSEO Chrome extension.",
+  "scripts": {
+    "test": "node scripts/check-syntax.mjs && node scripts/test-ai-full-analysis.mjs && node scripts/test-settings-ui.mjs && node scripts/test-settings-persistence.mjs && node --test tests/*.test.mjs",
+    "clean": "node scripts/build-chrome.mjs --clean",
+    "build:chrome": "node scripts/build-chrome.mjs",
+    "zip:chrome": "node scripts/zip-chrome.mjs",
+    "release:chrome": "node scripts/build-chrome.mjs && node scripts/zip-chrome.mjs"
+  },
+  "devDependencies": {
+    "acorn": "^8.19.0",
+    "fflate": "^0.8.3",
+    "prettier": "^3.9.10"
+  }
+}

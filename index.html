@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>PrivateSEO</title>
+    <link rel="icon" type="image/png" href="icons/icon-32.png">
+    <link rel="stylesheet" href="vendor/fontawesome/all.min.css">
+    <link rel="stylesheet" href="popup.css">
+    <script src="popup/shared.js" defer></script>
+    <script src="popup/shell.js" defer></script>
+    <script src="popup/domain/seo-audit.js" defer></script>
+    <script src="popup/tabs/overview.js" defer></script>
+    <script src="popup/tabs/search.js" defer></script>
+    <script src="popup/tabs/page.js" defer></script>
+    <script src="popup/tabs/links.js" defer></script>
+    <script src="popup/tabs/images.js" defer></script>
+    <script src="popup/tabs/microdata.js" defer></script>
+    <script src="popup/tabs/tools.js" defer></script>
+    <script src="popup/helpers.js" defer></script>
+    <script src="popup/tabs/ai.js" defer></script>
+    <script src="popup/bootstrap.js" defer></script>
+</head>
+<body>
+    <div class="wrapper">
+        <header class="header">
+            <div class="tabs">
+                <div class="tabs-item active" data-tab="overview"><span>Обзор</span></div>
+                <div class="tabs-item" data-tab="search"><span>Поиск</span></div>
+                <div class="tabs-item" data-tab="page"><span>Страница</span></div>
+                <div class="tabs-item" data-tab="links"><span>Ссылки</span></div>
+                <div class="tabs-item" data-tab="images"><span>Фото</span></div>
+                <div class="tabs-item" data-tab="microdata"><span>Разметка</span></div>
+                <div class="tabs-item" data-tab="tools"><span>Сервисы</span></div>
+                <div class="tabs-item tabs-item--ai" data-tab="ai">
+                    <i class="fa fa-robot"></i><span>AI</span>
+                </div>
+            </div>
+            <div class="tabs-gear-btn" id="openOptionsBtn" title="Настройки">
+                <i class="fa-solid fa-gear"></i>
+            </div>
+        </header>
+        <main>
+            <div class="tabs-content">
+
+                <!-- ===== OVERVIEW ===== -->
+                <div id="overview" class="active">
+                    <div class="tabs-content__inner">
+                        <div class="tabs-content__col flex-column">
+
+                            <!-- Quick Actions (Export) -->
+                            <div class="overview-quick-actions">
+                                <button id="overviewAiAnalysis" class="btn" style="flex:1; padding:11px 12px; font-size:13px; font-weight:bold; border-radius:8px; box-shadow:0 8px 18px rgba(53,99,242,0.12); border:1px solid rgba(53,99,242,0.22); background: #eef3ff; color:#3557d8; display:flex; align-items:center; justify-content:center; gap:8px;">
+                                    <i class="fa fa-robot" style="font-size:14px"></i> AI-оценка и рекомендации
+                                </button>
+                                <button id="exportPdfReport" class="btn" style="flex:1; padding:11px 12px; font-size:13px; font-weight:bold; border-radius:8px; box-shadow:0 8px 18px rgba(239,68,68,0.10); border:1px solid rgba(239,68,68,0.18); background: #fff1ef; color:#c84242; display:flex; align-items:center; justify-content:center; gap:8px;">
+                                    <i class="fa-solid fa-file-pdf"></i> Скачать PDF (отчёт)
+                                </button>
+                            </div>
+
+                            <!-- SEO Score -->
+                            <div id="seoScore" class="seo-score-block">
+                                <div class="seo-score-label">SEO оценка страницы</div>
+                                <div class="seo-score-bar-wrap">
+                                    <div class="seo-score-bar" id="seoScoreBar"></div>
+                                </div>
+                                <div class="seo-score-value" id="seoScoreValue">—</div>
+                            </div>
+
+                            <!-- Meta tags block -->
+                            <div class="tabs-content__row tabs-content__row_dropdown">
+                                <div class="d-flex alst-column overview-section-header">
+                                    <div class="tabs-content__row_name">Метатеги и заголовки</div>
+                                    <button id="copy-metatags-and-headings" class="overview-copy-icon-btn" type="button" title="Скопировать мета-теги по шаблону" aria-label="Скопировать мета-теги по шаблону">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div class="dropdown active">
+                                    <div id="title" class="dropdown__item alst-column">
+                                        <div class="tabs-content__row_name">title<p class="hint"></p></div>
+                                        <div class="tabs-content__row_prop">
+                                            <div class="result"></div>
+                                        </div>
+                                    </div>
+                                    <div id="h1" class="dropdown__item alst-column">
+                                        <div class="tabs-content__row_name">h1</div>
+                                        <div class="tabs-content__row_prop">
+                                            <div class="result"></div>
+                                        </div>
+                                    </div>
+                                    <div id="description" class="dropdown__item alst-column">
+                                        <div class="tabs-content__row_name">description<p class="hint"></p></div>
+                                        <div class="tabs-content__row_prop">
+                                            <div class="result"></div>
+                                        </div>
+                                    </div>
+                                    <div id="url" class="dropdown__item alst-column">
+                                        <div class="tabs-content__row_name">URL страницы<p class="hint"></p></div>
+                                        <div class="tabs-content__row_prop">
+                                            <a href="#" target="_blank"></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <!-- Indexation -->
+                            <div id="indexing" class="tabs-content__row tabs-content__row_dropdown">
+                                <div class="d-flex alst-column">
+                                    <div class="tabs-content__row_name">Индексация страницы</div>
+                                </div>
+                                <div class="dropdown active">
+                                    <div id="indexing-canonical" class="dropdown__item">
+                                        <div class="dropdown__item_name">Rel canonical</div>
+                                        <div class="dropdown__item_result">
+                                            <div class="result"></div>
+                                        </div>
+                                    </div>
+                                    <div id="indexing-metatag" class="dropdown__item">
+                                        <div class="dropdown__item_name">Meta robots</div>
+                                        <div class="dropdown__item_result">
+                                            <div class="result"></div>
+                                        </div>
+                                    </div>
+                                    <div id="indexing-x-robots-tag" class="dropdown__item">
+                                        <div class="dropdown__item_name">X-Robots-Tag</div>
+                                        <div class="dropdown__item_result">
+                                            <div class="result"></div>
+                                        </div>
+                                    </div>
+                                    <div id="indexing-robots" class="dropdown__item">
+                                        <div class="dropdown__item_name">
+                                            <span>Файл</span>
+                                            <a href="/robots.txt" target="_blank">robots.txt</a>
+                                        </div>
+                                        <div class="dropdown__item_result">
+                                            <div class="result"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sitemap -->
+                            <div id="sitemapXml" class="tabs-content__row tabs-content__row_dropdown">
+                                <div class="d-flex alst-column">
+                                    <div class="tabs-content__row_name">sitemap.xml</div>
+                                    <div class="tabs-content__row_prop"></div>
+                                    <button class="btn btn_arrow">
+                                        <i class="fa fa-chevron-down"></i>
+                                    </button>
+                                </div>
+                                <div class="dropdown"></div>
+                            </div>
+
+                            <!-- Lang / Hreflang — 2-column grid -->
+                            <div class="overview-2col-grid overview-lang-hreflang-grid">
+                                <div id="lang" class="tabs-content__row alst-column">
+                                    <div class="tabs-content__row_name">lang</div>
+                                    <div class="tabs-content__row_prop">
+                                        <div class="result"></div>
+                                    </div>
+                                </div>
+
+                                <div id="hreflang" class="tabs-content__row tabs-content__row_dropdown">
+                                    <div class="d-flex alst-column">
+                                        <div class="tabs-content__row_name">hreflang</div>
+                                        <div class="tabs-content__row_prop"></div>
+                                        <button class="btn btn_arrow">
+                                            <i class="fa fa-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                    <div class="dropdown"></div>
+                                </div>
+                            </div>
+
+                            <!-- IP — full width single row -->
+                            <div id="ip" class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">IP сайта</div>
+                                <div class="tabs-content__row_prop">
+                                    <div class="result"></div>
+                                </div>
+                            </div>
+
+                            <!-- Code / IKS — 2-column grid -->
+                            <div class="overview-2col-grid">
+                                <div id="statusCode" class="tabs-content__row alst-column">
+                                    <div class="tabs-content__row_name">Код ответа</div>
+                                    <div class="tabs-content__row_prop can-copied">
+                                        <div class="result"></div>
+                                    </div>
+                                </div>
+
+                                <div id="yaIksImg" class="tabs-content__row alst-column">
+                                    <div class="tabs-content__row_name">Индекс ИКС</div>
+                                    <div class="tabs-content__row_prop">
+                                        <div class="result"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Core Web Vitals -->
+                            <div id="webVitals" class="tabs-content__row tabs-content__row_dropdown">
+                                <div class="d-flex alst-column">
+                                    <div class="tabs-content__row_name">Core Web Vitals<p class="hint">Скорость и стабильность страницы</p></div>
+                                </div>
+                                <div class="dropdown active">
+                                    <div id="cwvLcp" class="dropdown__item alst-column">
+                                        <div class="tabs-content__row_name">LCP (Отрисовка)<p class="hint">Largest Contentful Paint</p></div>
+                                        <div class="tabs-content__row_prop"><div class="result"></div></div>
+                                    </div>
+                                    <div id="cwvCls" class="dropdown__item alst-column">
+                                        <div class="tabs-content__row_name">CLS (Сдвиги)<p class="hint">Cumulative Layout Shift</p></div>
+                                        <div class="tabs-content__row_prop"><div class="result"></div></div>
+                                    </div>
+                                    <div id="cwvTtfb" class="dropdown__item alst-column">
+                                        <div class="tabs-content__row_name">TTFB (Ответ сервера)<p class="hint">Time to First Byte</p></div>
+                                        <div class="tabs-content__row_prop"><div class="result"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <!-- ===== SEARCH ===== -->
+                <div id="search">
+                    <div class="tabs-content__inner">
+                        <div class="tabs-content__col flex-column">
+                            <!-- Индексация + site: — 2 в ряд -->
+                            <div class="overview-2col-grid">
+                                <div class="tabs-content__row alst-column">
+                                    <div class="tabs-content__row_name">Индексация текущей страницы</div>
+                                    <div class="tabs-content__row_btn">
+                                        <div id="checkSiteYandexCurrentUrl">
+                                            <a href="#" target="_blank" class="btn btn_arrow"><i class="fab fa-yandex"></i></a>
+                                        </div>
+                                        <div id="checkSiteGoogleCurrentUrl">
+                                            <a href="#" target="_blank" class="btn btn_arrow"><i class="fab fa-google"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tabs-content__row alst-column">
+                                    <div class="tabs-content__row_name">По оператору<p class="hint">site:domain.ru</p></div>
+                                    <div class="tabs-content__row_btn">
+                                        <div id="checkSiteYandexSite">
+                                            <a href="#" target="_blank" class="btn btn_arrow"><i class="fab fa-yandex"></i></a>
+                                        </div>
+                                        <div id="checkSiteGoogleSite">
+                                            <a href="#" target="_blank" class="btn btn_arrow"><i class="fab fa-google"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- url: + host: — 2 в ряд -->
+                            <div class="overview-2col-grid">
+                                <div class="tabs-content__row alst-column">
+                                    <div class="tabs-content__row_name">По оператору<p class="hint">url:domain.ru/*</p></div>
+                                    <div class="tabs-content__row_btn">
+                                        <div id="checkYandexUrl">
+                                            <a href="#" target="_blank" class="btn btn_arrow"><i class="fab fa-yandex"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tabs-content__row alst-column">
+                                    <div class="tabs-content__row_name">По оператору<p class="hint">host:domain.ru</p></div>
+                                    <div class="tabs-content__row_btn">
+                                        <div id="checkHostYandexSite">
+                                            <a href="#" target="_blank" class="btn btn_arrow"><i class="fab fa-yandex"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Проверить страницу на дубли<p class="hint">title:("Page Title") site:domain.ru</p></div>
+                                <div class="tabs-content__row_btn">
+                                    <div id="yandexCheckDuplicate">
+                                        <a href="#" target="_blank" class="btn btn_arrow"><i class="fab fa-yandex"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Скопировать все адреса из результатов поиска<p class="hint">Работает только на странице выдачи Яндекс/Google</p></div>
+                                <div class="tabs-content__row_btn">
+                                    <button id="yandexCopy" class="btn btn_arrow"><i class="far fa-copy"></i></button>
+                                </div>
+                            </div>
+                            <div id="searchMaps" class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Искать организацию на картах</div>
+                                <div class="tabs-content__row_btn">
+                                    <a href="#" target="_blank" class="btn btn_arrow"><i class="fab fa-yandex"></i></a>
+                                    <a href="#" target="_blank" class="btn btn_arrow"><i class="fab fa-google"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== PAGE ===== -->
+                <div id="page">
+                    <div class="tabs-content__inner">
+                        <div class="tabs-content__col flex-column">
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Подсветить заголовки H1-H6</div>
+                                <button id="showHeaderLighting" class="btn btn_arrow"><i class="fa fa-check"></i></button>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Показать alt-теги изображений</div>
+                                <button id="showImageAtl" class="btn btn_arrow"><i class="fa fa-check"></i></button>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Подсветить noindex/nofollow<p class="hint">По умолчанию выключено</p></div>
+                                <button id="showNoindex" class="btn btn_arrow"><i class="fa fa-check"></i></button>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Подсветить внешние ссылки<p class="hint">По умолчанию выключено</p></div>
+                                <button id="showExternalLinks" class="btn btn_arrow"><i class="fa fa-check"></i></button>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Отключить/включить JS<p class="hint">Необходимо включить обратно вручную</p></div>
+                                <button id="disableJS" class="btn btn_arrow"><i class="fa fa-check"></i></button>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Отключить/включить CSS</div>
+                                <button id="togglesCSS" class="btn btn_arrow"><i class="fa fa-check"></i></button>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Отправить на переобход в Яндекс Вебмастер<p class="hint">Адрес страницы будет скопирован в буфер обмена</p></div>
+                                <button id="yandexPereobhod" class="btn btn_arrow"><i class="fa fa-arrow-up-right-from-square"></i></button>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Проверить ответ сервера в Яндекс Вебмастер</div>
+                                <button id="yandexServerResonse" class="btn btn_arrow"><i class="fa fa-arrow-up-right-from-square"></i></button>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Проверить скорость загрузки<br><span class="hint">pagespeed.web.dev</span></div>
+                                <div id="openGooglePageSpeed"><a href="#" target="_blank" class="btn btn_arrow"><i class="fab fa-google"></i></a></div>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Проверить оптимизацию для мобильных<br><span class="hint">pagespeed.web.dev</span></div>
+                                <div id="openGoogleMobileFriendlyTest"><a href="#" target="_blank" class="btn btn_arrow"><i class="fab fa-google"></i></a></div>
+                            </div>
+                            <!-- Text statistics (collapsible) -->
+                            <div class="tabs-content__row tabs-content__row_dropdown" id="textInfo">
+                                <div class="d-flex alst-column">
+                                    <div class="tabs-content__row_name">Показать статистику текста страницы</div>
+                                    <button id="showTextInfo" class="btn btn_arrow"><i class="fa fa-chevron-down"></i></button>
+                                </div>
+                                <div class="dropdown">
+                                    <div id="charactersWords" class="dropdown__item">
+                                        <div class="dropdown__item_name">Всего слов</div>
+                                        <div class="dropdown__item_result"></div>
+                                    </div>
+                                    <div id="characters" class="dropdown__item">
+                                        <div class="dropdown__item_name">Символов без пробелов</div>
+                                        <div class="dropdown__item_result"></div>
+                                    </div>
+                                    <div id="words_without_a" class="dropdown__item">
+                                        <div class="dropdown__item_name">ТОП-10 слов без учёта анкоров</div>
+                                        <div class="dropdown__item_result"></div>
+                                    </div>
+                                    <div id="bigrammes" class="dropdown__item">
+                                        <div class="dropdown__item_name">ТОП-10 биграмм</div>
+                                        <div class="dropdown__item_result"></div>
+                                    </div>
+                                    <div id="words_with_alt" class="dropdown__item">
+                                        <div class="dropdown__item_name">ТОП-10 слов из alt/title картинок</div>
+                                        <div class="dropdown__item_result"></div>
+                                    </div>
+                                    <div id="ankors" class="dropdown__item">
+                                        <div class="dropdown__item_name">ТОП-10 анкоров внутренних ссылок</div>
+                                        <div class="dropdown__item_result"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== LINKS ===== -->
+                <div id="links">
+                    <div class="tabs-content__inner">
+                        <div class="tabs-content__col flex-column">
+                            <div class="tabs-content__row tabs-content__row_dropdown">
+                                <div class="d-flex alst-column" style="flex-direction:column;align-items:flex-start">
+                                    <div class="form_radio_group">
+                                        <div class="form_radio_group-item">
+                                            <input id="links-href-radio-all" type="radio" name="links-href-radio" value="all" checked>
+                                            <label for="links-href-radio-all">Все ссылки</label>
+                                        </div>
+                                        <div class="form_radio_group-item">
+                                            <input id="links-href-radio-internal" type="radio" name="links-href-radio" value="internal">
+                                            <label for="links-href-radio-internal">Внутренние</label>
+                                        </div>
+                                        <div class="form_radio_group-item">
+                                            <input id="links-href-radio-external" type="radio" name="links-href-radio" value="external">
+                                            <label for="links-href-radio-external">Внешние</label>
+                                        </div>
+                                    </div>
+                                    <div class="form_radio_group">
+                                        <div class="form_radio_group-item">
+                                            <input id="links-protocol-radio-all" type="radio" name="links-protocol-radio" value="all" checked>
+                                            <label for="links-protocol-radio-all">Все протоколы</label>
+                                        </div>
+                                        <div class="form_radio_group-item">
+                                            <input id="links-protocol-radio-https" type="radio" name="links-protocol-radio" value="https">
+                                            <label for="links-protocol-radio-https">https</label>
+                                        </div>
+                                        <div class="form_radio_group-item">
+                                            <input id="links-protocol-radio-http" type="radio" name="links-protocol-radio" value="http">
+                                            <label for="links-protocol-radio-http">http</label>
+                                        </div>
+                                        <div class="form_radio_group-item">
+                                            <input id="links-protocol-radio-other" type="radio" name="links-protocol-radio" value="other">
+                                            <label for="links-protocol-radio-other">Другой</label>
+                                        </div>
+                                    </div>
+                                    <div class="form_radio_group">
+                                        <div class="form_radio_group-item">
+                                            <input id="links-rel-radio-all" type="radio" name="links-rel-radio" value="all" checked>
+                                            <label for="links-rel-radio-all">Все атрибуты</label>
+                                        </div>
+                                        <div class="form_radio_group-item">
+                                            <input id="links-rel-radio-follow" type="radio" name="links-rel-radio" value="follow">
+                                            <label for="links-rel-radio-follow">follow</label>
+                                        </div>
+                                        <div class="form_radio_group-item">
+                                            <input id="links-rel-radio-nofollow" type="radio" name="links-rel-radio" value="nofollow">
+                                            <label for="links-rel-radio-nofollow">nofollow</label>
+                                        </div>
+                                        <div class="form_radio_group-item">
+                                            <input id="links-rel-radio-other" type="radio" name="links-rel-radio" value="other">
+                                            <label for="links-rel-radio-other">Другой</label>
+                                        </div>
+                                    </div>
+                                    <!-- Status filter — shown after link check -->
+                                    <div class="form_radio_group" data-status-filter style="display:none">
+                                        <div class="form_radio_group-item">
+                                            <input id="links-rel-status-code-all" type="radio" name="links-rel-status-code" value="all" checked>
+                                            <label for="links-rel-status-code-all">Все статусы</label>
+                                        </div>
+                                        <div class="form_radio_group-item">
+                                            <input id="links-rel-status-code-2xx" type="radio" name="links-rel-status-code" value="2xx">
+                                            <label for="links-rel-status-code-2xx">2xx (<span data-count>0</span>)</label>
+                                        </div>
+                                        <div class="form_radio_group-item">
+                                            <input id="links-rel-status-code-3xx" type="radio" name="links-rel-status-code" value="3xx">
+                                            <label for="links-rel-status-code-3xx">3xx (<span data-count>0</span>)</label>
+                                        </div>
+                                        <div class="form_radio_group-item">
+                                            <input id="links-rel-status-code-4xx" type="radio" name="links-rel-status-code" value="4xx">
+                                            <label for="links-rel-status-code-4xx">4xx (<span data-count>0</span>)</label>
+                                        </div>
+                                        <div class="form_radio_group-item">
+                                            <input id="links-rel-status-code-5xx" type="radio" name="links-rel-status-code" value="5xx">
+                                            <label for="links-rel-status-code-5xx">5xx (<span data-count>0</span>)</label>
+                                        </div>
+                                        <div class="form_radio_group-item">
+                                            <input id="links-rel-status-code-other" type="radio" name="links-rel-status-code" value="other">
+                                            <label for="links-rel-status-code-other">Другой (<span data-count>0</span>)</label>
+                                        </div>
+                                    </div>
+                                    <!-- Actions -->
+                                    <div class="hr-link-checker">
+                                        <div link-starter-checker style="display:inline-block">
+                                            <button class="links-checker-button" id="links-start-check" type="button">Проверить</button>
+                                            ссылки с задержкой
+                                            <input type="number" name="links-fetch-timeout" min="0" value="200">
+                                            мс
+                                        </div>
+                                        <div>
+                                            <span>Данные о ссылках можно</span>
+                                            <button class="links-checker-button" id="links-export" type="button">Экспортировать</button>
+                                            <button class="links-checker-button" id="links-copy" type="button">Копировать</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="dropdown active"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== IMAGES ===== -->
+                <div id="images">
+                    <div class="tabs-content__inner">
+                        <div class="tabs-content__col flex-column">
+                            <div class="tabs-content__row tabs-content__row_dropdown">
+                                <div class="d-flex alst-column" style="flex-direction:column;align-items:flex-start">
+                                    <div class="form_radio_group">
+                                        <div class="form_radio_group-item">
+                                            <input id="images-alt-radio-all" type="radio" name="images-alt-radio" value="all" checked>
+                                            <label for="images-alt-radio-all">Все изображения (0)</label>
+                                        </div>
+                                        <div class="form_radio_group-item">
+                                            <input id="images-alt-radio-empty" type="radio" name="images-alt-radio" value="empty">
+                                            <label for="images-alt-radio-empty">Пустой alt (0)</label>
+                                        </div>
+                                        <div class="form_radio_group-item">
+                                            <input id="images-alt-radio-without" type="radio" name="images-alt-radio" value="without">
+                                            <label for="images-alt-radio-without">Отсутствует alt (0)</label>
+                                        </div>
+                                        <div class="form_radio_group-item">
+                                            <input id="images-alt-radio-exists" type="radio" name="images-alt-radio" value="exists">
+                                            <label for="images-alt-radio-exists">Заполнен alt (0)</label>
+                                        </div>
+                                    </div>
+                                    <div class="hr-link-checker">
+                                        <button class="links-checker-button" id="images-check-size" type="button">Проверить вес изображений</button>
+                                        <span class="hint" style="margin-left:8px;">Картинки > 300 КБ будут подсвечены красным</span>
+                                    </div>
+                                </div>
+                                <div class="dropdown active"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== MICRODATA ===== -->
+                <div id="microdata">
+                    <div class="tabs-content__inner">
+                        <div class="tabs-content__col flex-column">
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Проверка расширенных результатов Google Rich Result</div>
+                                <div id="openGoogleRichResultMobileTest">
+                                    <a href="#" target="_blank" class="btn btn_arrow"><i class="fab fa-google"></i></a>
+                                </div>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Проверить страницу в валидаторе schema.org</div>
+                                <div id="openSchemaOrgMicrodataValidator">
+                                    <a href="#" target="_blank" class="btn btn_arrow"><i class="fa fa-arrow-up-right-from-square"></i></a>
+                                </div>
+                            </div>
+
+                            <!-- Social Preview Card -->
+                            <div id="socialPreviewContainer" class="tabs-content__row" style="display:none; flex-direction:column; align-items:flex-start;">
+                                <div class="tabs-content__row_name" style="margin-bottom:8px">Предпросмотр (Social Preview)</div>
+                                <div class="social-preview-card" id="socialPreviewCard">
+                                    <div class="sp-image-container">
+                                        <img class="sp-image" id="spImage" src="" alt="Open Graph Image">
+                                        <div class="sp-no-image" id="spNoImage"><i class="fa-regular fa-image"></i> Нет изображения</div>
+                                    </div>
+                                    <div class="sp-text">
+                                        <div class="sp-domain" id="spDomain">domain.ru</div>
+                                        <div class="sp-title" id="spTitle">Заголовок страницы</div>
+                                        <div class="sp-desc" id="spDesc">Описание страницы не задано или не было извлечено...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="microdata-jsonld" class="tabs-content__row tabs-content__row_dropdown">
+                                <div class="d-flex alst-column">
+                                    <div class="tabs-content__row_name">JSON-LD (Structured Data)</div>
+                                </div>
+                                <div class="dropdown active"></div>
+                            </div>
+                            <div id="microdata-og" class="tabs-content__row tabs-content__row_dropdown">
+                                <div class="d-flex alst-column">
+                                    <div class="tabs-content__row_name">Разметка Open Graph</div>
+                                </div>
+                                <div class="dropdown active"></div>
+                            </div>
+                            <div id="microdata-twitter" class="tabs-content__row tabs-content__row_dropdown">
+                                <div class="d-flex alst-column">
+                                    <div class="tabs-content__row_name">Разметка Twitter</div>
+                                </div>
+                                <div class="dropdown active"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== TOOLS ===== -->
+                <div id="tools">
+                    <div class="tabs-content__inner">
+                        <div class="tabs-content__col flex-column">
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Искать страницу в Webarchive<br><span class="hint">web.archive.org</span></div>
+                                <div id="openWebarchive"><a href="#" target="_blank" class="btn btn_arrow"><i class="fa fa-arrow-up-right-from-square"></i></a></div>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Проверить SSL-сертификат<br><span class="hint">sslshopper.com</span></div>
+                                <div id="checkSSL"><a href="#" target="_blank" class="btn btn_arrow"><i class="fa fa-arrow-up-right-from-square"></i></a></div>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">WHOIS домена<br><span class="hint">webnames.ru</span></div>
+                                <div id="checkWhoisInfoRegRU"><a href="#" target="_blank" class="btn btn_arrow"><i class="fa fa-arrow-up-right-from-square"></i></a></div>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Определить CMS сайта<br><span class="hint">be1.ru</span></div>
+                                <div id="cms"><a href="#" target="_blank" class="btn btn_arrow"><i class="fa fa-arrow-up-right-from-square"></i></a></div>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Проверить ответ сервера<br><span class="hint">bertal.ru</span></div>
+                                <div id="checkBertal"><a href="#" target="_blank" class="btn btn_arrow"><i class="fa fa-arrow-up-right-from-square"></i></a></div>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Проверить дубли страниц<br><span class="hint">be1.ru</span></div>
+                                <div id="checkDoublesBe1"><a href="#" target="_blank" class="btn btn_arrow"><i class="fa fa-arrow-up-right-from-square"></i></a></div>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">CheckTrust<br><span class="hint">checktrust.ru</span></div>
+                                <div id="checkCheckTrust"><a href="#" target="_blank" class="btn btn_arrow"><i class="fa fa-arrow-up-right-from-square"></i></a></div>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Валидатор CSS<br><span class="hint">jigsaw.w3.org</span></div>
+                                <div id="checkCSSValidator"><a href="#" target="_blank" class="btn btn_arrow"><i class="fa fa-arrow-up-right-from-square"></i></a></div>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Валидатор HTML<br><span class="hint">validator.w3.org</span></div>
+                                <div id="checkHTMLValidator"><a href="#" target="_blank" class="btn btn_arrow"><i class="fa fa-arrow-up-right-from-square"></i></a></div>
+                            </div>
+                            <div class="tabs-content__row alst-column">
+                                <div class="tabs-content__row_name">Проверка орфографии<br><span class="hint">websiteplanet.com</span></div>
+                                <div id="checkSpelling"><a href="#" target="_blank" class="btn btn_arrow"><i class="fa fa-arrow-up-right-from-square"></i></a></div>
+                            </div>
+
+                            <!-- Trackers -->
+                            <div id="trackersBlock" class="tabs-content__row tabs-content__row_dropdown">
+                                <div class="d-flex alst-column">
+                                    <div class="tabs-content__row_name">Трекеры на странице</div>
+                                    <button class="btn btn_arrow"><i class="fa fa-chevron-down"></i></button>
+                                </div>
+                                <div class="dropdown active" id="trackersList"></div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== OPTIONS ===== -->
+                <div id="options">
+                    <div class="tabs-content__inner">
+                        <div class="options-section options-section--template">
+                            <div class="options-section__title">Шаблон мета-тегов</div>
+                            <div class="options-template-card">
+                                <div class="options-template-note">Переменные: {title} {h1} {description} {url}</div>
+                                <textarea id="metaTagsTemplate" rows="5"></textarea>
+                            </div>
+                        </div>
+                        <div class="options-section">
+                            <div class="options-row">
+                                <span>Числовой поиск Яндекс</span>
+                                <input type="checkbox" id="optNumericalYandex" checked>
+                            </div>
+                            <div class="options-row">
+                                <span>Подсветка внешних ссылок по умолчанию</span>
+                                <input type="checkbox" id="optHighlightExternal">
+                            </div>
+                            <div class="options-row">
+                                <span>Подсветка noindex/nofollow по умолчанию</span>
+                                <input type="checkbox" id="optHighlightNoindex">
+                            </div>
+                            <div class="options-actions">
+                                <button id="saveOptions">Сохранить</button>
+                                <button id="resetOptions">Сбросить</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- ===== AI TAB ===== -->
+                <div id="ai">
+                    <div class="tabs-content__inner ai-tab-layout">
+                        <div class="tabs-content__col flex-column">
+
+                            <!-- Header bar -->
+                            <div class="ai-header-bar">
+                                <span class="ai-header-bar__icon">🤖</span>
+                                <div>
+                                    <div class="ai-header-bar__title">PrivateSEO AI</div>
+                                    <div class="ai-header-bar__sub">Анализирует текст открытой страницы. Результаты сохраняются пока вкладка открыта.</div>
+                                </div>
+                            </div>
+
+                            <!-- Inputs: keyword + SERP side by side -->
+                            <div class="tabs-content__row ai-inputs-grid">
+                                <div class="ai-input-col">
+                                    <label class="ai-keyword-field" for="aiMetaFocusKeyword">
+                                        <span class="ai-keyword-field__label">Основной ключ для мета-тегов</span>
+                                        <input id="aiMetaFocusKeyword" type="text" placeholder="Например: настенные сплит системы">
+                                    </label>
+                                    <div class="ai-keyword-field__hint">Поле необязательно. Без ключа мета-теги сгенерируются по содержимому страницы.</div>
+                                </div>
+                                <div class="ai-input-divider"></div>
+                                <div class="ai-input-col">
+                                    <span class="ai-keyword-field__label">Сравнение по SERP</span>
+                                    <div class="ai-serp-engine-note">Соберёт top title из Google и Яндекса по ключу выше.</div>
+                                    <button id="aiBtnSerp" class="btn-gen-meta ai-serp-btn" type="button">
+                                        <i class="fa fa-magnifying-glass"></i> Посмотреть SERP
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Action buttons -->
+                            <div class="tabs-content__row ai-actions-card">
+                                <button id="aiBtnAll" class="btn-gen-meta ai-btn-full" style="background: linear-gradient(135deg, #4f46e5, #8b5cf6);">
+                                    <i class="fa fa-bolt"></i> Запустить полный анализ
+                                </button>
+                                <div class="ai-btn-row">
+                                    <button id="aiBtnMeta" class="btn-gen-meta">
+                                        <i class="fa fa-wand-magic-sparkles"></i> Мета-теги
+                                    </button>
+                                    <button id="aiBtnIntent" class="btn-gen-meta" style="background:#8b5cf6;">
+                                        <i class="fa fa-magnifying-glass-chart"></i> Интент & LSI
+                                    </button>
+                                    <button id="aiBtnSpam" class="btn-gen-meta" style="background:#ef4444;">
+                                        <i class="fa fa-triangle-exclamation"></i> Переспам
+                                    </button>
+                                </div>
+                                <button id="aiBtnReview" class="btn-gen-meta ai-btn-full" style="background: linear-gradient(135deg, #122da6, #4295f9);">
+                                    <i class="fa fa-robot"></i> AI-оценка страницы
+                                </button>
+                            </div>
+
+                            <!-- Loader -->
+                            <div id="aiTabLoader" class="tabs-content__row ai-meta-loader" style="display:none;">
+                                <span class="loader-spinner" aria-hidden="true"></span><span id="aiTabLoaderText">Обработка запроса...</span>
+                            </div>
+
+                            <!-- Error -->
+                            <div id="aiTabError" class="tabs-content__row ai-meta-error" style="display:none;"></div>
+
+                            <div id="overviewAiReviewSection" class="tabs-content__row" style="display:none;">
+                                <div class="overview-ai-header">
+                                    <div>
+                                        <div class="tabs-content__row_name">AI SEO-оценка страницы</div>
+                                        <div id="overviewAiReviewVerdict" class="overview-ai-verdict"></div>
+                                    </div>
+                                    <div id="overviewAiReviewScore" class="overview-ai-score">—</div>
+                                </div>
+                                <div id="overviewAiReviewLoader" class="ai-meta-loader" style="display:none; padding:12px 0 4px;">
+                                    <span class="loader-spinner" aria-hidden="true"></span><span id="overviewAiReviewLoaderText">AI анализирует страницу...</span>
+                                </div>
+                                <div id="overviewAiReviewError" class="ai-meta-error" style="display:none; margin:10px 0 0;"></div>
+                                <div id="overviewAiReviewSummary" class="overview-ai-summary"></div>
+                                <div class="overview-ai-columns">
+                                    <div class="overview-ai-panel">
+                                        <div class="tabs-content__row_name">Что делать</div>
+                                        <div id="overviewAiReviewRecommendations" class="overview-ai-list"></div>
+                                    </div>
+                                    <div class="overview-ai-panel">
+                                        <div class="tabs-content__row_name">AI заметки</div>
+                                        <div id="overviewAiReviewInsights" class="overview-ai-list"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Meta result -->
+                            <div id="aiTabMetaResult" class="tabs-content__row ai-meta-result" style="display:none;">
+                                <div class="ai-meta-item">
+                                    <div class="ai-meta-item__header">
+                                        <span class="ai-meta-label">Title</span>
+                                        <span class="ai-meta-chars" id="aiTabTitleChars"></span>
+                                        <button id="aiUseTitleAsKey" class="ai-use-as-key-btn" type="button" title="Вставить title в поле ключа для SERP">
+                                            🔍 В SERP
+                                        </button>
+                                    </div>
+                                    <div class="ai-meta-value result-text can-copied" id="aiTabTitle"></div>
+                                </div>
+                                <div class="ai-meta-item">
+                                    <div class="ai-meta-item__header">
+                                        <span class="ai-meta-label">Description</span>
+                                        <span class="ai-meta-chars" id="aiTabDescChars"></span>
+                                    </div>
+                                    <div class="ai-meta-value result-text can-copied" id="aiTabDescription"></div>
+                                </div>
+                            </div>
+
+                            <div id="aiTabSerpResult" class="tabs-content__row ai-meta-result" style="display:none;">
+                                <div class="ai-meta-item">
+                                    <div class="ai-meta-item__header">
+                                        <span class="ai-meta-label">SERP comparison</span>
+                                    </div>
+                                    <div class="ai-serp-summary" id="aiSerpSummary"></div>
+                                    <div class="ai-serp-own-title" id="aiSerpOwnTitle"></div>
+                                    <div class="ai-serp-columns">
+                                        <div class="ai-serp-column">
+                                            <div class="ai-serp-column__header">
+                                                <span class="ai-serp-column__title">Google</span>
+                                                <span class="ai-serp-column__meta" id="aiSerpGoogleMeta"></span>
+                                            </div>
+                                            <div class="ai-serp-list" id="aiSerpGoogleTitles"></div>
+                                        </div>
+                                        <div class="ai-serp-column">
+                                            <div class="ai-serp-column__header">
+                                                <span class="ai-serp-column__title">Яндекс</span>
+                                                <span class="ai-serp-column__meta" id="aiSerpYandexMeta"></span>
+                                            </div>
+                                            <div class="ai-serp-list" id="aiSerpYandexTitles"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Intent result -->
+                            <div id="aiTabIntentResult" class="tabs-content__row ai-meta-result" style="display:none;">
+                                <div class="ai-meta-item">
+                                    <div class="ai-meta-item__header"><span class="ai-meta-label">Анализ интента & LSI</span></div>
+                                    <div class="ai-meta-value result-text" id="aiTabIntentContent" style="white-space:pre-wrap;font-size:13px;line-height:1.6;"></div>
+                                </div>
+                            </div>
+
+                            <!-- Spam result -->
+                            <div id="aiTabSpamResult" class="tabs-content__row ai-meta-result" style="display:none;">
+                                <div class="ai-meta-item">
+                                    <div class="ai-meta-item__header"><span class="ai-meta-label">Анализ переспама и водности</span></div>
+                                    <div class="ai-meta-value result-text" id="aiTabSpamContent" style="white-space:pre-wrap;font-size:13px;line-height:1.6;"></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- H counters bar — always visible on Overview tab -->
+        <div id="overviewStatsBar" class="overview-stats-bar">
+            <div id="h1Length"   class="overview-info__el" data-bs-label="H1 — заголовки" data-bs-tag="H1">
+                <div class="overview-info__tab overview-info__tab--h1"><span class="osb-label">H1</span><span class="counter">0</span></div>
+                <div class="dropdown__scroll_container" hidden></div>
+            </div>
+            <div id="h2Length"   class="overview-info__el" data-bs-label="H2 — заголовки" data-bs-tag="H2">
+                <div class="overview-info__tab overview-info__tab--h2"><span class="osb-label">H2</span><span class="counter">0</span></div>
+                <div class="dropdown__scroll_container" hidden></div>
+            </div>
+            <div id="h3Length"   class="overview-info__el" data-bs-label="H3 — заголовки" data-bs-tag="H3">
+                <div class="overview-info__tab overview-info__tab--h3"><span class="osb-label">H3</span><span class="counter">0</span></div>
+                <div class="dropdown__scroll_container" hidden></div>
+            </div>
+            <div id="h4Length"   class="overview-info__el" data-bs-label="H4 — заголовки" data-bs-tag="H4">
+                <div class="overview-info__tab overview-info__tab--h4"><span class="osb-label">H4</span><span class="counter">0</span></div>
+                <div class="dropdown__scroll_container" hidden></div>
+            </div>
+            <div id="h5Length"   class="overview-info__el" data-bs-label="H5 — заголовки" data-bs-tag="H5">
+                <div class="overview-info__tab overview-info__tab--h5"><span class="osb-label">H5</span><span class="counter">0</span></div>
+                <div class="dropdown__scroll_container" hidden></div>
+            </div>
+            <div id="h6Length"   class="overview-info__el" data-bs-label="H6 — заголовки" data-bs-tag="H6">
+                <div class="overview-info__tab overview-info__tab--h6"><span class="osb-label">H6</span><span class="counter">0</span></div>
+                <div class="dropdown__scroll_container" hidden></div>
+            </div>
+            <div id="allTitles"  class="overview-info__el" data-bs-label="Все заголовки H1–H6">
+                <div class="overview-info__tab overview-info__tab--all"><span class="osb-label">H1-H6</span><span class="counter">0</span></div>
+                <div class="dropdown__scroll_container" hidden></div>
+            </div>
+            <div id="linksLength" class="overview-info__el" data-bs-nav="links">
+                <div class="overview-info__tab overview-info__tab--links"><span class="osb-label">LINKS</span><span class="counter">0</span></div>
+            </div>
+            <div id="imgLength"  class="overview-info__el" data-bs-nav="images">
+                <div class="overview-info__tab overview-info__tab--images"><span class="osb-label">IMAGES</span><span class="counter">0</span></div>
+            </div>
+        </div>
+
+        <!-- Bottom Sheet -->
+        <div id="bottomSheet" class="bottom-sheet">
+            <div class="bottom-sheet__backdrop" id="bottomSheetBackdrop"></div>
+            <div class="bottom-sheet__panel">
+                <div class="bottom-sheet__drag-handle"></div>
+                <div class="bottom-sheet__header">
+                    <div class="bottom-sheet__title-row">
+                        <span class="bottom-sheet__title" id="bottomSheetTitle"></span>
+                        <span class="bottom-sheet__count" id="bottomSheetCount"></span>
+                    </div>
+                    <button class="bottom-sheet__close" id="bottomSheetClose"><i class="fa fa-xmark"></i></button>
+                </div>
+                <div class="bottom-sheet__body" id="bottomSheetBody"></div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <a href="https://private-seo.ru/?utm_source=plagin" target="_blank" class="footer-link">
+                <img src="logo.svg" alt="PrivateSEO" class="footer-logo">
+                <span class="footer-sep"></span>
+                <span class="footer-text">Продвигаем сайты в ТОП →</span>
+            </a>
+        </footer>
+</body>
+</html>

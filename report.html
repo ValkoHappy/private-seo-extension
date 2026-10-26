@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>PrivateSEO — PDF Отчет</title>
+    <link rel="icon" type="image/png" href="icons/icon-32.png">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 40px;
+            color: #333;
+            background: #f8f9fa;
+        }
+        .report-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        header {
+            border-bottom: 2px solid #efefef;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4338ca;
+        }
+        .header-date {
+            color: #888;
+            font-size: 14px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #111;
+        }
+        .url-highlight {
+            background: #eef2ff;
+            padding: 12px 15px;
+            border-radius: 6px;
+            word-break: break-all;
+            margin-bottom: 30px;
+            font-family: monospace;
+            font-size: 14px;
+            color: #4f46e5;
+            border: 1px solid #c7d2fe;
+        }
+        .score-block {
+            text-align: center;
+            padding: 25px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #f1f5f9;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        .score-value {
+            font-size: 56px;
+            font-weight: bold;
+            color: #22c55e;
+            margin-top: 10px;
+        }
+        .section {
+            margin-bottom: 35px;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        h2 {
+            font-size: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            align-items: start;
+        }
+        .data-grid-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+        .data-grid-4 {
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+        }
+        .data-item {
+            background: #fdfdfd;
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        .data-label {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .data-value {
+            font-size: 15px;
+            font-weight: 500;
+            word-break: break-word;
+            color: #0f172a;
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        .error-text { color: #ef4444; }
+        .success-text { color: #10b981; }
+        .warning-text { color: #f59e0b; }
+        .preview-load-btn {
+            margin-top: 10px;
+            border: 1px solid #cbd5e1;
+            background: #fff;
+            color: #4338ca;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .preview-load-btn:hover {
+            border-color: #818cf8;
+            color: #312e81;
+        }
+
+        .print-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #4f46e5;
+            color: #fff;
+            border: none;
+            padding: 15px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+            transition: transform 0.2s;
+            z-index: 1000;
+        }
+        .print-btn:hover {
+            transform: scale(1.05);
+            background: #4338ca;
+        }
+
+        .headings-breakdown {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        header,
+        h1,
+        .url-highlight,
+        #aiReportSection {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        .h-badge {
+            background: #f1f5f9;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+        .issues-summary {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .issue-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1px solid transparent;
+        }
+        .issue-pill--critical {
+            background: rgba(239, 68, 68, 0.10);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.20);
+        }
+        .issue-pill--warning {
+            background: rgba(245, 158, 11, 0.12);
+            color: #b45309;
+            border-color: rgba(245, 158, 11, 0.22);
+        }
+        .issue-pill--info {
+            background: rgba(59, 130, 246, 0.10);
+            color: #2563eb;
+            border-color: rgba(59, 130, 246, 0.20);
+        }
+        .issue-pill--success {
+            background: rgba(34, 197, 94, 0.10);
+            color: #16a34a;
+            border-color: rgba(34, 197, 94, 0.20);
+        }
+        .issues-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .issue-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            background: #fff;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        .issue-card--critical {
+            border-color: rgba(239, 68, 68, 0.24);
+        }
+        .issue-card--warning {
+            border-color: rgba(245, 158, 11, 0.24);
+        }
+        .issue-card--info {
+            border-color: rgba(59, 130, 246, 0.20);
+        }
+        .issue-card__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .issue-card__title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .issue-card__text {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        @media print {
+            body { background: #fff; padding: 0; }
+            .report-wrapper { box-shadow: none; max-width: 100%; border: none; padding: 0; }
+            .print-btn { display: none; }
+            .section { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <button class="print-btn" id="printReportBtn" type="button">🖨 Скачать PDF</button>
+
+    <div class="report-wrapper" id="reportWrapper">
+        <header>
+            <div class="header-logo">PrivateSEO</div>
+            <div class="header-date" id="reportDate"></div>
+        </header>
+
+        <h1>Отчет о техническом состоянии страницы</h1>
+        <div class="url-highlight">🌐 <span id="reportUrl"></span></div>
+
+        <div class="score-block">
+            <div class="data-label">Общая техническая оценка SEO</div>
+            <div class="score-value" id="reportScore">--/100</div>
+        </div>
+
+        <div class="section">
+            <h2>🚨 Проблемы и приоритеты</h2>
+            <div class="issues-summary" id="reportIssuesSummary"></div>
+            <div class="issues-list" id="reportIssuesList"></div>
+        </div>
+
+        <div class="section">
+            <h2>📜 Основные метатеги</h2>
+            <div class="data-grid">
+                <div class="data-item full-width">
+                    <div class="data-label">Title</div>
+                    <div class="data-value" id="reportTitle"></div>
+                </div>
+                <div class="data-item full-width">
+                    <div class="data-label">Description</div>
+                    <div class="data-value" id="reportDesc"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🏷️ Структура заголовков</h2>
+            <div class="data-grid">
+                <div class="data-item full-width">
+                    <div class="data-label">Заголовки H1 (Должен быть один)</div>
+                    <div class="data-value" id="reportH1"></div>
+                </div>
+                <div class="data-item full-width">
+                    <div class="data-label">Иерархия заголовков на странице</div>
+                    <div class="headings-breakdown" id="reportHeadingsConfig">
+                        <div class="h-badge">H1: 0</div>
+                        <div class="h-badge">H2: 0</div>
+                        <div class="h-badge">H3: 0</div>
+                        <div class="h-badge">H4: 0</div>
+                        <div class="h-badge">H5: 0</div>
+                        <div class="h-badge">H6: 0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔍 Индексация и сканирование</h2>
+            <div class="data-grid">
+                <div class="data-item">
+                    <div class="data-label">Canonical URL</div>
+                    <div class="data-value" id="reportCanonical"></div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">Meta Robots</div>
+                    <div class="data-value" id="reportRobots"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⚡ Скорость (Core Web Vitals)</h2>
+            <div class="data-grid data-grid-3">
+                <div class="data-item">
+                    <div class="data-label">LCP (Отрисовка)</div>
+                    <div class="data-value" id="reportLcp"></div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">CLS (Сдвиги макета)</div>
+                    <div class="data-value" id="reportCls"></div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">TTFB (Ответ сервера)</div>
+                    <div class="data-value" id="reportTtfb"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔗 Ссылки</h2>
+            <div class="data-grid data-grid-4">
+                <div class="data-item">
+                    <div class="data-label">Всего</div>
+                    <div class="data-value" id="reportLinksTotal">0</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">Внутренние</div>
+                    <div class="data-value" id="reportLinksInternal">0</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">Внешние</div>
+                    <div class="data-value" id="reportLinksExternal">0</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">Nofollow</div>
+                    <div class="data-value" id="reportLinksNofollow">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🖼️ Изображения и контент</h2>
+            <div class="data-grid data-grid-3">
+                <div class="data-item">
+                    <div class="data-label">Объем текста</div>
+                    <div class="data-value" id="reportWords"></div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">Всего изображений</div>
+                    <div class="data-value" id="reportImagesTotal">0</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">Изобр. без атрибута ALT</div>
+                    <div class="data-value" id="reportImagesNoAlt">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📱 Социальные сети (Open Graph)</h2>
+            <div class="data-grid">
+                <div class="data-item full-width">
+                    <div class="data-label">OG:Title</div>
+                    <div class="data-value" id="reportOgTitle"></div>
+                </div>
+                <div class="data-item full-width">
+                    <div class="data-label">OG:Image</div>
+                    <div class="data-value" id="reportOgImage"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Report Section — shown only if AI data was generated -->
+        <div class="section" id="aiReportSection" style="display:none; border:2px solid #c7d2fe; border-radius:8px; padding:20px; background:#f5f3ff;">
+        </div>
+
+    </div>
+
+    <script src="vendor/html2pdf.bundle.min.js"></script>
+    <script src="report.js"></script>
+</body>
+</html>
